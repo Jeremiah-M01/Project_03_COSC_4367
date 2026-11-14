@@ -3,10 +3,6 @@
 
 # D= fewest insertions + deletions that turn sequence A to B
 
-
-
-
-
 ops = {"dp_cells":0,"myers_steps":0}
 
 
@@ -34,7 +30,7 @@ def dp_len(seq_a,seq_b):
         prev_row = row
     ops["dp_cells"] += len_a * len_b
     lcs_len = prev_row[len_b]
-    return len_a +len_b - 2 +lcs_len
+    return len_a + len_b - 2 * lcs_len
 
 def dp_script(seq_a,seq_b):
     """Full LCS table, then walk back from the bottom-right corner to read off the edits."""
@@ -70,6 +66,8 @@ def myers_len(seq_a,seq_b):
     offset = len_a + len_b + 1
     furthest = [0] * (2 * offset+1)
     work = 0
+    history = []
+    found = False
 
     for edits in range(len_a + len_b +1):
         for diagonal in range(-edits,edits+1,2):
