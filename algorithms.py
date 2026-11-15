@@ -61,6 +61,33 @@ def dp_script(seq_a,seq_b):
     script.reverse()
     return len_a + len_b -2 * table[len_a][len_b],script
 
+def myers_len(seq_a,seq_b):
+    """D from the basic greedy algorithm (Figure 2 in the paper).
+    Keeps only the current V array, no history, so it runs in O(N + M) space.
+    The benchmark can race this against dp_len; use myers_script to get the edits."""
+    len_a,len_b = len(seq_a),len(seq_b)
+    offset = len_a + len_b + 1
+    furthest = [0] * (2 * offset+1)
+    work = 0
+
+    for edits in range(len_a + len_b + 1):
+        for diagonal in range(-edits,edits+1,2):
+            if diagonal == -edits or (diagonal != edits and furthest[offset + diagonal - 1] < furthest[offset + diagonal + 1]):
+                pos_a = furthest[offset + diagonal + 1]      # step down from diagonal+1: an insertion
+            else:
+                pos_a = furthest[offset + diagonal - 1] + 1  # step right from diagonal-1: a deletion
+            pos_b = pos_a - diagonal
+            snake_start = pos_a
+            while (0 <= pos_a < len_a and 0 <= pos_b < len_b and seq_a[pos_a] == seq_b[pos_b]):
+                pos_a += 1
+                pos_b += 1
+            work += 1 + (pos_a - snake_start)
+            furthest[offset + diagonal] = pos_a
+            if pos_a >= len_a and pos_b >= len_b:
+                # Same counting as myers_script, so the two report the same work.
+                ops["myers_steps"] += work
+                return edits
+
 def myers_script(seq_a,seq_b):
     len_a,len_b = len(seq_a),len(seq_b)
     offset = len_a + len_b + 1
