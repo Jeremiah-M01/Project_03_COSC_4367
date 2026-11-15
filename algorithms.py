@@ -12,7 +12,7 @@ def reset_ops():
 
     # DP Baseline
 
-def dp_len(seq_a,seq_b):
+def dp_length(seq_a,seq_b):
     """D from the longest common subsequence (LCS) table, 
     keeping only two rows."""
     len_a,len_b = len(seq_a),len(seq_b)
@@ -61,6 +61,33 @@ def dp_script(seq_a,seq_b):
     script.reverse()
     return len_a + len_b -2 * table[len_a][len_b],script
 
+def myers_length(seq_a,seq_b):
+    """The paper's Fig. 2: for d = 0, 1, 2, ... find the furthest point each
+    d-edit path can reach; stop when one reaches the end of both sequences."""
+    len_a,len_b = len(seq_a),len(seq_b)
+
+    offset = len_a + len_b +1
+    furthest = [0] * (2 * offset+1)
+    work = 0
+    for edits in range(len_a+len_b+1):
+        for diagonal in range(-edits,edits+1,2):
+             # Step down from diagonal+1 (an insertion) or right from diagonal-1 (a deletion),
+            # whichever of those two paths got further.
+            if diagonal == -edits or (diagonal != edits and
+                                      furthest[offset + diagonal - 1] < furthest[offset + diagonal + 1]):
+                pos_a = furthest[offset + diagonal + 1]
+            else:
+                pos_a = furthest[offset + diagonal - 1] + 1
+            pos_b = pos_a - diagonal
+            snake_start = pos_a
+            # Follow the "snake": matching symbols cost nothing.
+            while pos_a < len_a and pos_b < len_b and seq_a[pos_a] == seq_b[pos_b]:
+                pos_a += 1; pos_b += 1
+            work += 1 + (pos_a - snake_start)
+            furthest[offset + diagonal] = pos_a
+            if pos_a >= len_a and pos_b >= len_b:         # reached the end of both
+                ops["myers_steps"] += work
+                return edits
 def myers_script(seq_a,seq_b):
     len_a,len_b = len(seq_a),len(seq_b)
     offset = len_a + len_b + 1
@@ -117,3 +144,20 @@ def myers_script(seq_a,seq_b):
     script.reverse()
     return total_edits, script
 
+
+
+    
+    
+
+
+def count_edits(script):
+    """Number of insertions and deletions in an edit script"""
+    return sum(1 for op,_ in script if op != "=")
+
+def apply_script(script):
+    """Rebuild (A,B) from and Edit Script to see if correct"""
+
+    seq_a = [symbol for op, symbol in script if op != "+"]
+    seq_b =[symbol for op,symbol in script if op != "-"]
+
+    return seq_a,seq_b
