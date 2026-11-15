@@ -61,7 +61,7 @@ def dp_script(seq_a,seq_b):
     script.reverse()
     return len_a + len_b -2 * table[len_a][len_b],script
 
-def myers_len(seq_a,seq_b):
+def myers_script(seq_a,seq_b):
     len_a,len_b = len(seq_a),len(seq_b)
     offset = len_a + len_b + 1
     furthest = [0] * (2 * offset+1)
@@ -73,9 +73,9 @@ def myers_len(seq_a,seq_b):
         for diagonal in range(-edits,edits+1,2):
 
             if diagonal == -edits or (diagonal != edits and furthest[offset+diagonal-1]< furthest[offset+diagonal+1]):
-                pos_a = furthest[offset+diagonal]
-            else:
                 pos_a = furthest[offset+diagonal+1]
+            else:
+                pos_a = furthest[offset+diagonal-1]+1
             pos_b = pos_a -diagonal
             snake_start =pos_a
 # Follow the "snake": matching symbols cost nothing.
@@ -116,3 +116,4 @@ def myers_len(seq_a,seq_b):
         script.append(("=", seq_a[pos_a - 1])); pos_a -= 1; pos_b -= 1
     script.reverse()
     return total_edits, script
+
