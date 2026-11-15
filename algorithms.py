@@ -72,17 +72,19 @@ def myers_script(seq_a,seq_b):
     for edits in range(len_a + len_b +1):
         for diagonal in range(-edits,edits+1,2):
 
-            if diagonal == -edits or (diagonal != edits and furthest[offset+diagonal-1]< furthest[offset+diagonal+1]):
-                pos_a = furthest[offset+diagonal+1]
+            if diagonal == -edits or (diagonal != edits and furthest[offset + diagonal - 1] < furthest[offset + diagonal + 1]):
+                pos_a = furthest[offset + diagonal + 1]
             else:
-                pos_a = furthest[offset+diagonal-1]+1
+                pos_a = furthest[offset + diagonal - 1] + 1
             pos_b = pos_a -diagonal
-            snake_start =pos_a
+            snake_start = pos_a
 # Follow the "snake": matching symbols cost nothing.
-            while pos_a <len_a and pos_b < len_b and seq_a[pos_a] == seq_b[pos_b]:
-                pos_a +=1;pos_b+=1
+            while (0 <= pos_a < len_a and 0 <= pos_b < len_b and seq_a[pos_a] == seq_b[pos_b]):
+                pos_a += 1
+                pos_b += 1
             work += 1 + (pos_a - snake_start)
-            furthest[offset + diagonal] = pos_a
+            furthest[offset + diagonal] = pos_a   
+             
             if pos_a >= len_a and pos_b >= len_b:
                 found = True
                 break
@@ -97,13 +99,14 @@ def myers_script(seq_a,seq_b):
     pos_a,pos_b = len_a,len_b
 
     for edits in range(total_edits,0,-1):
-        before = history[edits-1]
+        previous_offset = edits - 1
+        before = history[previous_offset]
         diagonal = pos_a - pos_b
-        if diagonal == -edits or (diagonal != edits and before[diagonal - 1 + edits - 1] < before[diagonal + 1 + edits - 1]):
+        if diagonal == -edits or (diagonal != edits and before[diagonal - 1 + previous_offset] < before[diagonal + 1 + previous_offset]):
             prev_diagonal = diagonal + 1          # we came down: an insertion
         else:
             prev_diagonal = diagonal - 1          # we came right: a deletion
-        prev_pos_a = before[prev_diagonal + edits - 1]
+        prev_pos_a = before[prev_diagonal + previous_offset]
         prev_pos_b = prev_pos_a - prev_diagonal
         while pos_a > prev_pos_a and pos_b > prev_pos_b:      # undo the snake of matches
             script.append(("=", seq_a[pos_a - 1])); pos_a -= 1; pos_b -= 1
