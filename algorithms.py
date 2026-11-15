@@ -61,7 +61,7 @@ def dp_script(seq_a,seq_b):
     script.reverse()
     return len_a + len_b -2 * table[len_a][len_b],script
 
-def myers_len(seq_a,seq_b):
+def myers_script(seq_a,seq_b):
     len_a,len_b = len(seq_a),len(seq_b)
     offset = len_a + len_b + 1
     furthest = [0] * (2 * offset+1)
@@ -119,3 +119,4 @@ def myers_len(seq_a,seq_b):
         script.append(("=", seq_a[pos_a - 1])); pos_a -= 1; pos_b -= 1
     script.reverse()
     return total_edits, script
+
