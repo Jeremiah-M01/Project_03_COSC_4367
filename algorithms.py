@@ -73,9 +73,9 @@ def myers_len(seq_a,seq_b):
         for diagonal in range(-edits,edits+1,2):
 
             if diagonal == -edits or (diagonal != edits and furthest[offset+diagonal-1]< furthest[offset+diagonal+1]):
-                pos_a = furthest[offset+diagonal]
+                pos_a = furthest[offset+diagonal + 1]
             else:
-                pos_a = furthest[offset+diagonal+1]
+                pos_a = furthest[offset+diagonal-1] + 1
             pos_b = pos_a -diagonal
             snake_start =pos_a
 # Follow the "snake": matching symbols cost nothing.
